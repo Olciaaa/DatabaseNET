@@ -2,6 +2,7 @@
 using AleksandraPoskrobekEFProducts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,40 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AleksandraPoskrobekEFProducts.Migrations
 {
     [DbContext(typeof(ProductContext))]
-    partial class ProductContextModelSnapshot : ModelSnapshot
+    [Migration("20230423205800_Invoice3")]
+    partial class Invoice3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
-
-            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Company", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ZipCode")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Companies");
-
-                    b.UseTptMappingStrategy();
-                });
 
             modelBuilder.Entity("AleksandraPoskrobekEFProducts.Invoice", b =>
                 {
@@ -74,9 +49,37 @@ namespace AleksandraPoskrobekEFProducts.Migrations
                     b.Property<int>("UnitsOnStock")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("supplierID")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("ProductID");
 
+                    b.HasIndex("supplierID");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Supplier", b =>
+                {
+                    b.Property<int>("SupplierID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SupplierID");
+
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("InvoiceProduct", b =>
@@ -94,25 +97,15 @@ namespace AleksandraPoskrobekEFProducts.Migrations
                     b.ToTable("InvoiceProduct");
                 });
 
-            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Customer", b =>
+            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Product", b =>
                 {
-                    b.HasBaseType("AleksandraPoskrobekEFProducts.Company");
+                    b.HasOne("AleksandraPoskrobekEFProducts.Supplier", "Supplier")
+                        .WithMany("SupplierProducts")
+                        .HasForeignKey("supplierID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<bool>("Discount")
-                        .HasColumnType("INTEGER");
-
-                    b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Supplier", b =>
-                {
-                    b.HasBaseType("AleksandraPoskrobekEFProducts.Company");
-
-                    b.Property<string>("bankAccountNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.ToTable("Suppliers");
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("InvoiceProduct", b =>
@@ -130,22 +123,9 @@ namespace AleksandraPoskrobekEFProducts.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AleksandraPoskrobekEFProducts.Customer", b =>
-                {
-                    b.HasOne("AleksandraPoskrobekEFProducts.Company", null)
-                        .WithOne()
-                        .HasForeignKey("AleksandraPoskrobekEFProducts.Customer", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("AleksandraPoskrobekEFProducts.Supplier", b =>
                 {
-                    b.HasOne("AleksandraPoskrobekEFProducts.Company", null)
-                        .WithOne()
-                        .HasForeignKey("AleksandraPoskrobekEFProducts.Supplier", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("SupplierProducts");
                 });
 #pragma warning restore 612, 618
         }
